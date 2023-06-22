@@ -13,7 +13,22 @@ Download Pre-trained Models:
 ```bash
 https://www.dropbox.com/sh/uwh51z8u292lzz5/AAC6MMT6E7MJbQ0RLYz6iyeNa?dl=0
 ```
-Substitute Dataset Generation:
+
+### SageMaker Studio
+To run on SageMaker studio:
+1. Make sure you are running on a GPU instance (`ml.p3.2xlarge`)
+2. Open the System terminal
+    ![img.png](img.png)
+3. ``git clone https://github.com/inorogu/Data-free-backdoor``
+4. ``cd Data-free-backdoor``
+
+## Setup
+Install the libraries used by the project. 
+```bash
+pip install -r requirements.txt
+```
+
+Substitute Dataset Generation -- download cifar100
 ```bash
 python knowledge_distill_dataset.py
 ```
@@ -25,7 +40,6 @@ Backdoor Injection:
 ```bash
 python poison_model.py
 ```
-
 ## Trigger_Patterns_of_GTSRB
 ![image](https://github.com/lvpeizhuo/Data-free_Backdoor/blob/main/Trigger_Patterns_of_GTSRB.png)
 
