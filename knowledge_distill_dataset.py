@@ -17,6 +17,11 @@ from models import *
 from data_transform import *
 import sys
 
+from pathlib import Path
+DATASET_LOC = "./dataset"
+p = Path(DATASET_LOC)
+p.mkdir(parents=True, exist_ok=True)
+
 unloader = transforms.ToPILImage()
 
 
@@ -97,7 +102,6 @@ elif distill_data_name == "lfw":
     test_dataset = torchvision.datasets.LFWPeople(
         root="./data", download=True, transform=LFW_transforms
     )
-
 
 testloader = DataLoader(test_dataset, batch_size=batch_size)
 
