@@ -8,7 +8,7 @@ Pillow
 scikit_learn
 scipy
 thop
-torch
+torch>=1.11,<2.0
 torchfile
 torchvision
 tqdm
