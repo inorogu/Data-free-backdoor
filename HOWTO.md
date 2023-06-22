@@ -1,3 +1,8 @@
+To run on SageMaker studio:
+1. Open the System terminal
+    ![img.png](img.png)
+2. ``git clone https://github.com/inorogu/Data-free-backdoor``
+3. ``cd Data-free-backdoor``
 ## Setup
 Install the libraries used by the project. 
 ```bash
