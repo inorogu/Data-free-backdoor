@@ -3,28 +3,32 @@
 import torch
 import torch.nn as nn
 
-class ConvBnActBlock(nn.Module):
 
-    def __init__(self,
-                 inplanes,
-                 planes,
-                 kernel_size,
-                 stride,
-                 padding,
-                 groups=1,
-                 has_bn=True,
-                 has_act=True):
+class ConvBnActBlock(nn.Module):
+    def __init__(
+        self,
+        inplanes,
+        planes,
+        kernel_size,
+        stride,
+        padding,
+        groups=1,
+        has_bn=True,
+        has_act=True,
+    ):
         super(ConvBnActBlock, self).__init__()
         bias = False if has_bn else True
 
         self.layer = nn.Sequential(
-            nn.Conv2d(inplanes,
-                      planes,
-                      kernel_size,
-                      stride=stride,
-                      padding=padding,
-                      groups=groups,
-                      bias=bias),
+            nn.Conv2d(
+                inplanes,
+                planes,
+                kernel_size,
+                stride=stride,
+                padding=padding,
+                groups=groups,
+                bias=bias,
+            ),
             nn.BatchNorm2d(planes) if has_bn else nn.Sequential(),
             nn.ReLU(inplace=True) if has_act else nn.Sequential(),
         )
@@ -36,38 +40,43 @@ class ConvBnActBlock(nn.Module):
 
 
 class BasicBlock(nn.Module):
-
     def __init__(self, inplanes, planes, stride=1):
         super(BasicBlock, self).__init__()
         self.downsample = True if stride != 1 or inplanes != planes * 1 else False
 
-        self.conv1 = ConvBnActBlock(inplanes,
-                                    planes,
-                                    kernel_size=3,
-                                    stride=stride,
-                                    padding=1,
-                                    groups=1,
-                                    has_bn=True,
-                                    has_act=True)
-        self.conv2 = ConvBnActBlock(planes,
-                                    planes,
-                                    kernel_size=3,
-                                    stride=1,
-                                    padding=1,
-                                    groups=1,
-                                    has_bn=True,
-                                    has_act=False)
+        self.conv1 = ConvBnActBlock(
+            inplanes,
+            planes,
+            kernel_size=3,
+            stride=stride,
+            padding=1,
+            groups=1,
+            has_bn=True,
+            has_act=True,
+        )
+        self.conv2 = ConvBnActBlock(
+            planes,
+            planes,
+            kernel_size=3,
+            stride=1,
+            padding=1,
+            groups=1,
+            has_bn=True,
+            has_act=False,
+        )
         self.relu = nn.ReLU(inplace=True)
 
         if self.downsample:
-            self.downsample_conv = ConvBnActBlock(inplanes,
-                                                  planes,
-                                                  kernel_size=1,
-                                                  stride=stride,
-                                                  padding=0,
-                                                  groups=1,
-                                                  has_bn=True,
-                                                  has_act=False)
+            self.downsample_conv = ConvBnActBlock(
+                inplanes,
+                planes,
+                kernel_size=1,
+                stride=stride,
+                padding=0,
+                groups=1,
+                has_bn=True,
+                has_act=False,
+            )
 
     def forward(self, x):
         inputs = x
@@ -85,46 +94,53 @@ class BasicBlock(nn.Module):
 
 
 class Bottleneck(nn.Module):
-
     def __init__(self, inplanes, planes, stride=1):
         super(Bottleneck, self).__init__()
         self.downsample = True if stride != 1 or inplanes != planes * 4 else False
 
-        self.conv1 = ConvBnActBlock(inplanes,
-                                    planes,
-                                    kernel_size=1,
-                                    stride=1,
-                                    padding=0,
-                                    groups=1,
-                                    has_bn=True,
-                                    has_act=True)
-        self.conv2 = ConvBnActBlock(planes,
-                                    planes,
-                                    kernel_size=3,
-                                    stride=stride,
-                                    padding=1,
-                                    groups=1,
-                                    has_bn=True,
-                                    has_act=True)
-        self.conv3 = ConvBnActBlock(planes,
-                                    planes * 4,
-                                    kernel_size=1,
-                                    stride=1,
-                                    padding=0,
-                                    groups=1,
-                                    has_bn=True,
-                                    has_act=False)
+        self.conv1 = ConvBnActBlock(
+            inplanes,
+            planes,
+            kernel_size=1,
+            stride=1,
+            padding=0,
+            groups=1,
+            has_bn=True,
+            has_act=True,
+        )
+        self.conv2 = ConvBnActBlock(
+            planes,
+            planes,
+            kernel_size=3,
+            stride=stride,
+            padding=1,
+            groups=1,
+            has_bn=True,
+            has_act=True,
+        )
+        self.conv3 = ConvBnActBlock(
+            planes,
+            planes * 4,
+            kernel_size=1,
+            stride=1,
+            padding=0,
+            groups=1,
+            has_bn=True,
+            has_act=False,
+        )
         self.relu = nn.ReLU(inplace=True)
 
         if self.downsample:
-            self.downsample_conv = ConvBnActBlock(inplanes,
-                                                  planes * 4,
-                                                  kernel_size=1,
-                                                  stride=stride,
-                                                  padding=0,
-                                                  groups=1,
-                                                  has_bn=True,
-                                                  has_act=False)
+            self.downsample_conv = ConvBnActBlock(
+                inplanes,
+                planes * 4,
+                kernel_size=1,
+                stride=stride,
+                padding=0,
+                groups=1,
+                has_bn=True,
+                has_act=False,
+            )
 
     def forward(self, x):
         inputs = x
@@ -152,40 +168,36 @@ class ResNet(nn.Module):
         self.planes = [inplanes, inplanes * 2, inplanes * 4, inplanes * 8]
         self.expansion = 1 if block is BasicBlock else 4
 
-        self.conv1 = ConvBnActBlock(3,
-                                    self.inplanes,
-                                    kernel_size=3,
-                                    stride=1,
-                                    padding=1,
-                                    groups=1,
-                                    has_bn=True,
-                                    has_act=True)
+        self.conv1 = ConvBnActBlock(
+            3,
+            self.inplanes,
+            kernel_size=3,
+            stride=1,
+            padding=1,
+            groups=1,
+            has_bn=True,
+            has_act=True,
+        )
 
-        self.layer1 = self.make_layer(self.block,
-                                      self.planes[0],
-                                      self.layer_nums[0],
-                                      stride=1)
-        self.layer2 = self.make_layer(self.block,
-                                      self.planes[1],
-                                      self.layer_nums[1],
-                                      stride=2)
-        self.layer3 = self.make_layer(self.block,
-                                      self.planes[2],
-                                      self.layer_nums[2],
-                                      stride=2)
-        self.layer4 = self.make_layer(self.block,
-                                      self.planes[3],
-                                      self.layer_nums[3],
-                                      stride=2)
+        self.layer1 = self.make_layer(
+            self.block, self.planes[0], self.layer_nums[0], stride=1
+        )
+        self.layer2 = self.make_layer(
+            self.block, self.planes[1], self.layer_nums[1], stride=2
+        )
+        self.layer3 = self.make_layer(
+            self.block, self.planes[2], self.layer_nums[2], stride=2
+        )
+        self.layer4 = self.make_layer(
+            self.block, self.planes[3], self.layer_nums[3], stride=2
+        )
 
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(self.planes[3] * self.expansion, self.num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight,
-                                        mode='fan_out',
-                                        nonlinearity='relu')
+                nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
             elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)

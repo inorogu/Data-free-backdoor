@@ -1,13 +1,13 @@
-'''
+"""
 Deep Residual Learning for Image Recognition
 https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py
-'''
+"""
 import os
 import sys
 
 BASE_DIR = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.dirname(
-        os.path.abspath(__file__)))))
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
 sys.path.append(BASE_DIR)
 
 import torch
@@ -16,13 +16,13 @@ import torch.nn as nn
 from backbones.resnet import ConvBnActBlock, BasicBlock, Bottleneck
 
 __all__ = [
-    'resnet18cifar',
-    'resnet34halfcifar',
-    'resnet34cifar',
-    'resnet50halfcifar',
-    'resnet50cifar',
-    'resnet101cifar',
-    'resnet152cifar',
+    "resnet18cifar",
+    "resnet34halfcifar",
+    "resnet34cifar",
+    "resnet50halfcifar",
+    "resnet50cifar",
+    "resnet101cifar",
+    "resnet152cifar",
 ]
 
 
@@ -36,40 +36,36 @@ class ResNetCifar(nn.Module):
         self.planes = [inplanes, inplanes * 2, inplanes * 4, inplanes * 8]
         self.expansion = 1 if block is BasicBlock else 4
 
-        self.conv1 = ConvBnActBlock(3,
-                                    self.inplanes,
-                                    kernel_size=3,
-                                    stride=1,
-                                    padding=1,
-                                    groups=1,
-                                    has_bn=True,
-                                    has_act=True)
+        self.conv1 = ConvBnActBlock(
+            3,
+            self.inplanes,
+            kernel_size=3,
+            stride=1,
+            padding=1,
+            groups=1,
+            has_bn=True,
+            has_act=True,
+        )
 
-        self.layer1 = self.make_layer(self.block,
-                                      self.planes[0],
-                                      self.layer_nums[0],
-                                      stride=1)
-        self.layer2 = self.make_layer(self.block,
-                                      self.planes[1],
-                                      self.layer_nums[1],
-                                      stride=2)
-        self.layer3 = self.make_layer(self.block,
-                                      self.planes[2],
-                                      self.layer_nums[2],
-                                      stride=2)
-        self.layer4 = self.make_layer(self.block,
-                                      self.planes[3],
-                                      self.layer_nums[3],
-                                      stride=2)
+        self.layer1 = self.make_layer(
+            self.block, self.planes[0], self.layer_nums[0], stride=1
+        )
+        self.layer2 = self.make_layer(
+            self.block, self.planes[1], self.layer_nums[1], stride=2
+        )
+        self.layer3 = self.make_layer(
+            self.block, self.planes[2], self.layer_nums[2], stride=2
+        )
+        self.layer4 = self.make_layer(
+            self.block, self.planes[3], self.layer_nums[3], stride=2
+        )
 
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(self.planes[3] * self.expansion, self.num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight,
-                                        mode='fan_out',
-                                        nonlinearity='relu')
+                nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
             elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
@@ -134,14 +130,15 @@ def resnet152cifar(**kwargs):
     return _resnetcifar(Bottleneck, [3, 8, 36, 3], 64, **kwargs)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import os
     import random
     import numpy as np
     import torch
+
     seed = 0
     # for hash
-    os.environ['PYTHONHASHSEED'] = str(seed)
+    os.environ["PYTHONHASHSEED"] = str(seed)
     # for python and numpy
     random.seed(seed)
     np.random.seed(seed)
@@ -154,42 +151,46 @@ if __name__ == '__main__':
     image_h, image_w = 32, 32
     from thop import profile
     from thop import clever_format
-    macs, params = profile(net,
-                           inputs=(torch.randn(1, 3, image_h, image_w), ),
-                           verbose=False)
-    macs, params = clever_format([macs, params], '%.3f')
+
+    macs, params = profile(
+        net, inputs=(torch.randn(1, 3, image_h, image_w),), verbose=False
+    )
+    macs, params = clever_format([macs, params], "%.3f")
     out = net(torch.autograd.Variable(torch.randn(3, 3, image_h, image_w)))
-    print(f'1111, macs: {macs}, params: {params},out_shape: {out.shape}')
+    print(f"1111, macs: {macs}, params: {params},out_shape: {out.shape}")
 
     net = resnet34halfcifar(num_classes=1000)
     image_h, image_w = 32, 32
     from thop import profile
     from thop import clever_format
-    macs, params = profile(net,
-                           inputs=(torch.randn(1, 3, image_h, image_w), ),
-                           verbose=False)
-    macs, params = clever_format([macs, params], '%.3f')
+
+    macs, params = profile(
+        net, inputs=(torch.randn(1, 3, image_h, image_w),), verbose=False
+    )
+    macs, params = clever_format([macs, params], "%.3f")
     out = net(torch.autograd.Variable(torch.randn(3, 3, image_h, image_w)))
-    print(f'2222, macs: {macs}, params: {params},out_shape: {out.shape}')
+    print(f"2222, macs: {macs}, params: {params},out_shape: {out.shape}")
 
     net = resnet50cifar(num_classes=1000)
     image_h, image_w = 32, 32
     from thop import profile
     from thop import clever_format
-    macs, params = profile(net,
-                           inputs=(torch.randn(1, 3, image_h, image_w), ),
-                           verbose=False)
-    macs, params = clever_format([macs, params], '%.3f')
+
+    macs, params = profile(
+        net, inputs=(torch.randn(1, 3, image_h, image_w),), verbose=False
+    )
+    macs, params = clever_format([macs, params], "%.3f")
     out = net(torch.autograd.Variable(torch.randn(3, 3, image_h, image_w)))
-    print(f'3333, macs: {macs}, params: {params},out_shape: {out.shape}')
+    print(f"3333, macs: {macs}, params: {params},out_shape: {out.shape}")
 
     net = resnet152cifar(num_classes=1000)
     image_h, image_w = 32, 32
     from thop import profile
     from thop import clever_format
-    macs, params = profile(net,
-                           inputs=(torch.randn(1, 3, image_h, image_w), ),
-                           verbose=False)
-    macs, params = clever_format([macs, params], '%.3f')
+
+    macs, params = profile(
+        net, inputs=(torch.randn(1, 3, image_h, image_w),), verbose=False
+    )
+    macs, params = clever_format([macs, params], "%.3f")
     out = net(torch.autograd.Variable(torch.randn(3, 3, image_h, image_w)))
-    print(f'4444, macs: {macs}, params: {params},out_shape: {out.shape}')
+    print(f"4444, macs: {macs}, params: {params},out_shape: {out.shape}")
