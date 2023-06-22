@@ -1,4 +1,6 @@
 import json
+from typing import Callable
+
 import torch
 import os
 from multiprocessing.dummy import Pool as ThreadPool
@@ -74,14 +76,29 @@ def get_dataset(filedir):
             labels.append(i)
             images.append(filedir + namelist[i] + "/" + filename)
 
+    return load_dataset_shuffled(read_images, label_num)
+    # pool = ThreadPool()
+    # pool.map(read_images, list(range(label_num)))
+    # pool.close()
+    # pool.join()
+    #
+    # Together = list(zip(images, labels))
+    # random.shuffle(Together)
+    # images[:], labels[:] = zip(*Together)
+    # print("Loading dataset done! Load " + str(len(labels)) + " images in total.")
+    # return images, labels
+
+
+def load_dataset_shuffled(f: Callable, num_labels: int) -> ([], []):
+    images, labels = [], []
     pool = ThreadPool()
-    pool.map(read_images, list(range(label_num)))
+    pool.map(f, list(range(num_labels)))
     pool.close()
     pool.join()
 
-    Together = list(zip(images, labels))
-    random.shuffle(Together)
-    images[:], labels[:] = zip(*Together)
+    together = list(zip(images, labels))
+    random.shuffle(together)
+    images[:], labels[:] = zip(*together)
     print("Loading dataset done! Load " + str(len(labels)) + " images in total.")
     return images, labels
 
@@ -116,22 +133,27 @@ def get_dataset_vggface(filedir, max_num=10):
                 if n == max_num:
                     break
 
-    pool = ThreadPool()
-    pool.map(read_images, list(range(label_num)))
-    pool.close()
-    pool.join()
-
-    Together = list(zip(images, labels))
-    random.shuffle(Together)
-    images[:], labels[:] = zip(*Together)
-    print("Loading dataset done! Load " + str(len(labels)) + " images in total.")
-    return images, labels
+    # pool = ThreadPool()
+    # pool.map(read_images, list(range(label_num)))
+    # pool.close()
+    # pool.join()
+    #
+    # Together = list(zip(images, labels))
+    # random.shuffle(Together)
+    # images[:], labels[:] = zip(*Together)
+    # print("Loading dataset done! Load " + str(len(labels)) + " images in total.")
+    # return images, labels
+    return load_dataset_shuffled(read_images, label_num)
 
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
 
     def __init__(self):
+        self.count = 0
+        self.sum = 0
+        self.avg = 0
+        self.val = 0
         self.reset()
 
     def reset(self):

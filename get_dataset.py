@@ -63,13 +63,14 @@ def get_dataset(filedir, max_num=0):
                 if n == max_num:
                     break
 
-    pool = ThreadPool()
-    pool.map(read_images, list(range(label_num)))
-    pool.close()
-    pool.join()
-
-    Together = list(zip(images, labels))
-    random.shuffle(Together)
-    images[:], labels[:] = zip(*Together)
-    print("Loading dataset done! Load " + str(len(labels)) + " images in total.")
-    return images, labels
+    # pool = ThreadPool()
+    # pool.map(read_images, list(range(label_num)))
+    # pool.close()
+    # pool.join()
+    #
+    # Together = list(zip(images, labels))
+    # random.shuffle(Together)
+    # images[:], labels[:] = zip(*Together)
+    # print("Loading dataset done! Load " + str(len(labels)) + " images in total.")
+    # return images, labels
+    return load_dataset_shuffled(read_images, label_num)
