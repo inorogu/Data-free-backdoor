@@ -6,7 +6,6 @@ import os
 from multiprocessing.dummy import Pool as ThreadPool
 import random
 import numpy as np
-import torch.nn.functional as F
 import sklearn.preprocessing as preprocessing
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -77,16 +76,6 @@ def get_dataset(filedir):
             images.append(filedir + namelist[i] + "/" + filename)
 
     return load_dataset_shuffled(read_images, label_num)
-    # pool = ThreadPool()
-    # pool.map(read_images, list(range(label_num)))
-    # pool.close()
-    # pool.join()
-    #
-    # Together = list(zip(images, labels))
-    # random.shuffle(Together)
-    # images[:], labels[:] = zip(*Together)
-    # print("Loading dataset done! Load " + str(len(labels)) + " images in total.")
-    # return images, labels
 
 
 def load_dataset_shuffled(f: Callable, num_labels: int) -> ([], []):
@@ -113,7 +102,6 @@ def get_dataset_vggface(filedir, max_num=10):
             namelist.append(name)
     fp.close()
 
-    # namelist = os.listdir(filedir)
     label_num = len(namelist)
 
     print("multi-thread Loading dataset, needs more than 10 seconds ...")
@@ -133,16 +121,6 @@ def get_dataset_vggface(filedir, max_num=10):
                 if n == max_num:
                     break
 
-    # pool = ThreadPool()
-    # pool.map(read_images, list(range(label_num)))
-    # pool.close()
-    # pool.join()
-    #
-    # Together = list(zip(images, labels))
-    # random.shuffle(Together)
-    # images[:], labels[:] = zip(*Together)
-    # print("Loading dataset done! Load " + str(len(labels)) + " images in total.")
-    # return images, labels
     return load_dataset_shuffled(read_images, label_num)
 
 
@@ -180,23 +158,13 @@ def train_with_grad_control(model, epoch, trainloader, criterion, optimizer, lam
     num_clean = 0
     num_poison = 0
 
-    for i, (input, target, poisoned_flags) in enumerate(trainloader):
-        input, target = input.to(device), target.to(device)
-        # print(target)
-        # sys.exit()
-        # print(input)
-        # sys.exit()
-        # print(input.shape)
-        # input = torch.squeeze(input, 1)
-        # target = torch.squeeze(target, 1)
-        output = model(input)
-        # print(poisoned_flags)
-        # print(type(target.detach()))
-        # print(type(output))
-        # print(output)
-        # sys.exit()
+    for i, (input_data, target, poisoned_flags) in enumerate(trainloader):
+        input_data, target = input_data.to(device), target.to(device)
+
+        output = model(input_data)
+
         index_clean = [
-            index for (index, flag) in enumerate(poisoned_flags) if flag == False
+            index for (index, flag) in enumerate(poisoned_flags) if flag is False
         ]
         output_clean = output[index_clean]
         target_clean = target[index_clean]
@@ -215,7 +183,7 @@ def train_with_grad_control(model, epoch, trainloader, criterion, optimizer, lam
         sim0 += sim0_tmp
 
         index_poison = [
-            index for index, flag in enumerate(poisoned_flags) if flag == True
+            index for index, flag in enumerate(poisoned_flags) if flag is True
         ]
         output_poison = output[index_poison]
         # print("poison num:",len(output_poison))
@@ -230,7 +198,8 @@ def train_with_grad_control(model, epoch, trainloader, criterion, optimizer, lam
 
         # print(type(output_clean))
         # print(output_clean)
-        # output_clean, target_clean, output_poison, target_poison = torch.tensor(output_clean), torch.tensor(target_clean), torch.tensor(output_poison), torch.tensor(target_poison)
+        # output_clean, target_clean, output_poison, target_poison = torch.tensor(output_clean), \
+        #       torch.tensor(target_clean), torch.tensor(output_poison), torch.tensor(target_poison)
         # sys.exit()
 
         loss_clean = criterion(output_clean, target_clean)
@@ -244,7 +213,7 @@ def train_with_grad_control(model, epoch, trainloader, criterion, optimizer, lam
 
         # print(loss)
         # sys.exit()
-        losses.update(loss.item(), input.size(0))
+        losses.update(loss.item(), input_data.size(0))
         # compute gradient and do SGD step
         optimizer.zero_grad()
         loss.backward()
@@ -261,16 +230,16 @@ def train_with_grad_control(model, epoch, trainloader, criterion, optimizer, lam
 
 
 def validate(model, epoch, valloader, criterion, clean):
-    losses = AverageMeter()
+    AverageMeter()
     model.eval()
     correct = 0
     _sum = 0
 
-    for i, (input, target, poisoned_flags) in enumerate(valloader):
-        input = torch.squeeze(input)
+    for i, (input_data, target, poisoned_flags) in enumerate(valloader):
+        input_data = torch.squeeze(input_data)
         target = torch.squeeze(target)
-        input, target = input.to(device), target.to(device)
-        output = model(input)
+        input_data, target = input_data.to(device), target.to(device)
+        output = model(input_data)
         output_np = output.cpu().detach().numpy()
         target_np = target.cpu().detach().numpy()
         out_ys = np.argmax(output_np, axis=-1)
@@ -284,7 +253,7 @@ def validate(model, epoch, valloader, criterion, clean):
         correct += np.sum(_, axis=-1)
         _sum += _.shape[0]
         # loss = criterion(output, target)
-        # losses.update(loss.item(), input.size(0))
+        # losses.update(loss.item(), input_data.size(0))
 
     if clean:
         print("epoch:", epoch)
