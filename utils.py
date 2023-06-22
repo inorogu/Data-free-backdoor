@@ -5,16 +5,33 @@ import torch
 import os
 from multiprocessing.dummy import Pool as ThreadPool
 import random
+from datetime import datetime
+import logging
+import logging.config
 import numpy as np
 import sklearn.preprocessing as preprocessing
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+LOG_DIR = "./logs"
+
+
+def setup_logging():
+    """Load logging configuration"""
+    log_configs = {"dev": "logging.ini", "prod": "logging.aws.ini"}
+    config = log_configs.get(os.environ["ENV"], "logging.ini")
+    timestamp = datetime.now().strftime("%Y%m%d-%H:%M:%S")
+
+    logging.config.fileConfig(
+        config,
+        disable_existing_loggers=False,
+        defaults={"logfilename": f"{LOG_DIR}/{timestamp}.log"},
+    )
+
 
 def read_config():
     f = open("./config.json", encoding="utf-8")
     content = f.read()
-    # print(content)
     params = json.loads(content)
     return params
 
