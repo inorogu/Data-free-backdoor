@@ -11,7 +11,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 def read_config():
-    f = open("./config.txt", encoding="utf-8")
+    f = open("./config.json", encoding="utf-8")
     content = f.read()
     # print(content)
     params = json.loads(content)
