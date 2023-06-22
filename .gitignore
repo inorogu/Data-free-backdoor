@@ -6,6 +6,7 @@ dataset/*
 dataset
 *.pyc
 .DS_Store
+checkpoints/
 
 
 # Byte-compiled / optimized / DLL files
