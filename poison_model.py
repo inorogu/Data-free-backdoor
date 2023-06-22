@@ -142,7 +142,7 @@ elif dataset_name == "tiny-imagenet-200":
     test_images = np.array(test_images)
     test_labels = np.array(test_labels)
 elif dataset_name == "cifar10":
-    _dataset = torchvision.datasets.CIFAR10(root="./data", train=False)
+    _dataset = torchvision.datasets.CIFAR10(root="./data", train=False, download=True)
     test_images = [_dataset[i][0] for i in range(len(_dataset))]
     test_labels = _dataset.targets
 else:
