@@ -7,7 +7,7 @@ numpy==1.25.0
 opencv_python==4.7.0.72
 Pillow==9.5.0
 scikit_learn==1.2.2
-scipy==1.8.0
+scipy==1.10.1
 thop==0.1.1.post2209072238
 torch==2.0.1
 torchfile==0.1.0
