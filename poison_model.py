@@ -20,6 +20,7 @@ from utils import *
 from models import *
 from data_transform import *
 
+
 # torch.multiprocessing.set_start_method('forkserver', force=True)
 def setup_seed(seed):
     torch.manual_seed(seed)
@@ -140,6 +141,10 @@ elif dataset_name == "tiny-imagenet-200":
         test_labels.append(label)
     test_images = np.array(test_images)
     test_labels = np.array(test_labels)
+elif dataset_name == "cifar10":
+    _dataset = torchvision.datasets.CIFAR10(root="./data", train=False)
+    test_images = [_dataset[i][0] for i in range(len(_dataset))]
+    test_labels = _dataset.targets
 else:
     test_images, test_labels = get_dataset("./dataset/" + dataset_name + "/test/")
 
@@ -159,12 +164,12 @@ if model_name == "resnets":
         TensorDatasetImg(train_images, train_labels, transform=cifar100_transforms),
         shuffle=True,
         batch_size=batch_size,
-        num_workers=4,
+        num_workers=0,
         pin_memory=True,
     )
 
     test_loader = DataLoader(
-        TensorDatasetPath(
+        TensorDatasetImg(
             test_images,
             test_labels,
             transform=cifar10_transforms_test,
@@ -174,12 +179,12 @@ if model_name == "resnets":
         ),
         shuffle=False,
         batch_size=64,
-        num_workers=4,
+        num_workers=0,
         pin_memory=True,
     )
 
     test_loader_poison = DataLoader(
-        TensorDatasetPath(
+        TensorDatasetImg(
             test_images,
             test_labels,
             transform=cifar10_transforms_test,
@@ -189,7 +194,7 @@ if model_name == "resnets":
         ),
         shuffle=False,
         batch_size=64,
-        num_workers=4,
+        num_workers=0,
         pin_memory=True,
     )
 elif model_name == "vgg_face":
