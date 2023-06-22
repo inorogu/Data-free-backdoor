@@ -1,11 +1,10 @@
-# generated from https://github.com/bndr/pipreqs
+# Generated from https://github.com/bndr/pipreqs
 h5py==3.9.0
 imageio==2.31.1
-matplotlib==3.5.1
+matplotlib==3.7.1
 ml_collections==0.1.1
-numpy==1.21.5
+numpy==1.25.0
 opencv_python==4.7.0.72
-Pillow==9.0.1
 Pillow==9.5.0
 scikit_learn==1.2.2
 scipy==1.8.0
