@@ -30,11 +30,6 @@ random.shuffle(dataset)
 data_num = len(dataset)
 print("distill_data num:", data_num)
 
-# max_num = int(com_ratio * data_num)
-# print("max_num: ",max_num)
-
-# min_max_scaler = preprocessing.MinMaxScaler()
-
 images = []
 outputs = []
 for i in range(data_num):
@@ -67,21 +62,21 @@ batch_num = int(data_num / batch_size) + (data_num % batch_size != 0)
 data_compression = []
 
 
-def select_img(images_batch, outputs_batch, batch_n):
-    data_num = images_batch.shape[0]
-    max_num = int(data_num * com_ratio)
+def select_img(img_batch, outs_batch, batch_n):
+    num_datapoints = img_batch.shape[0]
+    max_num = int(num_datapoints * com_ratio)
     if max_num == 0:
         return
     n_selected = 0
-    images_sim = np.dot(images_batch, images_batch.transpose())
+    images_sim = np.dot(img_batch, img_batch.transpose())
     # print(images_sim)
     # sys.exit()
-    outputs_sim = np.dot(outputs_batch, outputs_batch.transpose())
+    outputs_sim = np.dot(outs_batch, outs_batch.transpose())
     co_sim = np.multiply(images_sim, outputs_sim)
     # print(co_sim)
     # sys.exit()
 
-    index = random.randint(0, data_num - 1)
+    index = random.randint(0, num_datapoints - 1)
     # print(index)
 
     while n_selected < max_num:

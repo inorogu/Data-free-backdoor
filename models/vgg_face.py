@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import torchfile
 
 
-class VGG_16(nn.Module):
+class VGG_16(nn.Module):    # noqa
     """
     Main Class
     """

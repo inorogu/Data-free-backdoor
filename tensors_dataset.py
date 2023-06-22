@@ -4,7 +4,6 @@ import torch
 import numpy as np
 import PIL.Image as Image
 import random
-from torchvision import utils as vutils
 
 unloader = transforms.ToPILImage()
 
@@ -99,7 +98,7 @@ class TensorDataset(Dataset):
         # img = Image.open(f).convert('RGB')
         img = self.data_tensor[index]
 
-        if self.transform != None:
+        if self.transform is not None:
             img = self.transform(img).float()
 
             # print(type(img))

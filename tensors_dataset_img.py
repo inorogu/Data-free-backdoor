@@ -1,13 +1,13 @@
+import random
+
+import PIL.Image as Image
+import cv2
+import numpy as np
+import torch
 from torch.utils.data import Dataset
 from torchvision import transforms
-import torch
-import numpy as np
-import PIL.Image as Image
+
 from utils import read_config
-import random
-import cv2
-import sys
-import copy
 
 
 class TensorDatasetImg(Dataset):
@@ -56,7 +56,7 @@ class TensorDatasetImg(Dataset):
         img = self.data_tensor[index]
         # img.save('img'+str(index)+'.png')
 
-        if self.transform != None:
+        if self.transform is not None:
             img = self.transform(img).float()
             # print(img.shape)
             # print(type(img))

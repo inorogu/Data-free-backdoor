@@ -25,6 +25,9 @@ from tensors_dataset_path import TensorDatasetPath
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 if __name__ == "__main__":
+    setup_logging()
+    logger = logging.getLogger(__name__)
+
     parser = argparse.ArgumentParser(
         description="Show, Attend, and Tell - Tutorial - Generate Caption"
     )
@@ -93,7 +96,7 @@ if __name__ == "__main__":
     # Encode, decode with attention and beam search
 
     img_num = len(test_images)
-    print("img num: ", img_num)
+    logger.info("img num: ", img_num)
     sim = 0.0
     for i, (input, target, poisoned_flags) in enumerate(test_loader):
         input = input.to(device)
@@ -102,11 +105,8 @@ if __name__ == "__main__":
             poison_model(input).cpu().detach().numpy().reshape(1, -1).squeeze()
         )
 
-        # print(feature_map.shape)
-        # print(feature_map_poison.shape)
-
-        # print(np.linalg.norm(feature_map-feature_map_poison, ord=1))
-        # sim += np.linalg.norm(feature_map-feature_map_poison, ord=1)
+        logger.info(feature_map.shape)
+        logger.info(feature_map_poison.shape)
 
         feature_map_norm = np.linalg.norm(feature_map)
         feature_map_poison_norm = np.linalg.norm(feature_map_poison)
