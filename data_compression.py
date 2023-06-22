@@ -89,7 +89,7 @@ def select_img(images_batch, outputs_batch, batch_n):
         data_compression.append(dataset[batch_n * batch_size + index])
         n_selected += 1
         co_sim[:, index] = 1
-        print(batch_n, index)
+        # print(batch_n, index)
 
 
 for i in range(batch_num):
