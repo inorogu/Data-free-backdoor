@@ -2,7 +2,7 @@
 
 import torch.nn as nn
 
-from backbones.resnet import ConvBnActBlock, BasicBlock
+from .backbones.resnet import ConvBnActBlock, BasicBlock
 
 
 class Bottleneck(nn.Module):
