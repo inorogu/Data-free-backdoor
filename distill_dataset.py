@@ -19,7 +19,7 @@ Basically, it just runs the model on the dataset and saves the output for later 
 (To easily calculate the similarity between the outputs of the model for different inputs)
 """
 def prepare_dataset(model, dataset_name, overwrite=False):
-    datasets = ["cifar10", "cifar100", "lfw", "gtsrb", "celeba"]
+    datasets = ["cifar10", "cifar100", "lfw", "gtsrb", "celeba", "random"]
     dataset_name = dataset_name.lower()
 
     out_name = DATASET_LOC + "/distill_" + dataset_name
@@ -51,6 +51,8 @@ def prepare_dataset(model, dataset_name, overwrite=False):
         test_dataset = torchvision.datasets.CelebA(
             root=DATA_LOC, split="train", download=True, transform=VGGFace_transforms
         )
+    elif dataset_name == "random":
+        test_dataset = [(torch.rand(3, 32, 32), 0) for _ in range(50000)]
 
     unloader = transforms.ToPILImage()
 

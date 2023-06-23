@@ -237,7 +237,7 @@ def train_with_grad_control(model, epoch, trainloader, criterion, optimizer, lam
         loss_poison = criterion(output_poison, target_poison)
 
         if len(output_poison) > 0:
-            loss = (1 - lambda1) * loss_clean + lambda1 * loss_poison
+            loss = loss_clean + lambda1 * loss_poison
         else:
             loss = loss_clean
         # loss = criterion(output, target)
